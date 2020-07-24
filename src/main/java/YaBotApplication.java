@@ -1,3 +1,4 @@
+import bot.factory.BotFactory;
 import config.ApplicationProperties;
 import consts.Consts;
 import net.dv8tion.jda.api.JDA;
@@ -10,7 +11,7 @@ public class YaBotApplication {
 
     public static void main(String[] args) {
         try {
-            JDA jda = JDABuilder.createDefault(properties.getProperty(Consts.BOT_TOKEN)).build();
+            var bot = BotFactory.getInstance(Consts.BOT_TOKEN);
         } catch (LoginException e) {
             e.printStackTrace();
         } catch (Exception e) {
