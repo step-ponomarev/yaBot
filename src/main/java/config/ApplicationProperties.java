@@ -7,11 +7,13 @@ import java.util.Properties;
 public class ApplicationProperties {
     private Properties properties;
 
-    public ApplicationProperties(final String propFileName) {
+    public ApplicationProperties(final InputStream propertiesInputStream) {
         properties = new Properties();
 //TODO: Класс не должен отвечать за обработку своих ошибок
-        try (InputStream is = getClass().getResourceAsStream(propFileName)) {
-            properties.load(is);
+        try {
+            properties.load(propertiesInputStream);
+
+            propertiesInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

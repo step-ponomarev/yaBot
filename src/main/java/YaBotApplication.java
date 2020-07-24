@@ -1,21 +1,23 @@
 import bot.factory.BotFactory;
+import bot.listeners.GreetingListener;
 import config.ApplicationProperties;
 import consts.Consts;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 
 import javax.security.auth.login.LoginException;
 
 public class YaBotApplication {
-    static final ApplicationProperties properties = new ApplicationProperties(Consts.PROPERTIES_FILE_NAME);
+    static final ApplicationProperties properties = new ApplicationProperties(
+            YaBotApplication.class.getResourceAsStream(Consts.PROPERTIES_FILE_NAME)
+    );
 
     public static void main(String[] args) {
         try {
-            var bot = BotFactory.getInstance(Consts.BOT_TOKEN);
+            var bot = BotFactory.getInstance(properties.getProperty(Consts.BOT_TOKEN));
+            bot.addEventListener(new GreetingListener());
         } catch (LoginException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("IDK EXCEPTION: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
