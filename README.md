@@ -8,4 +8,4 @@
 - [ ] Придумать команды
 
 ## Tools
-[JDA](https://github.com/DV8FromTheWorld/JDA#documentation) - Используемая Discord Api библиотека 
+[JDA](https://github.com/DV8FromTheWorld/JDA) - Используемая Discord Api библиотека 
