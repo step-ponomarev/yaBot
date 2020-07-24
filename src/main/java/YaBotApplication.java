@@ -14,7 +14,7 @@ public class YaBotApplication {
         } catch (LoginException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("IDK EXCEPTIONL: " + e.getMessage());
+            System.err.println("IDK EXCEPTION: " + e.getMessage());
         }
     }
 }
