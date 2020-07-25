@@ -7,16 +7,12 @@ import java.util.Properties;
 public class ApplicationProperties {
     private Properties properties;
 
-    public ApplicationProperties(final InputStream propertiesInputStream) {
+    public ApplicationProperties() {
         properties = new Properties();
-//TODO: Класс не должен отвечать за обработку своих ошибок
-        try {
-            properties.load(propertiesInputStream);
+    }
 
-            propertiesInputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void init(final InputStream propertiesInputStream) throws IOException {
+        properties.load(propertiesInputStream);
     }
 
     public String getProperty(final String key) {
