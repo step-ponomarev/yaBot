@@ -1,12 +1,13 @@
+import bot.commands.YaMusicCommandHandler;
 import bot.factory.BotFactory;
 import bot.listeners.GreetingListener;
+import bot.listeners.YaMusicCommandsListener;
 import config.ApplicationProperties;
 import consts.Consts;
 
-import javax.security.auth.login.LoginException;
 import java.io.InputStream;
 
-public class YaBotApplication {
+public final class YaBotApplication {
     static final ApplicationProperties properties = new ApplicationProperties();
 
     public static void main(String[] args) {
@@ -14,9 +15,6 @@ public class YaBotApplication {
             properties.init(getResourceAsStream(Consts.PROPERTIES_FILE_NAME));
 
             var bot = BotFactory.getInstance(properties.getProperty(Consts.BOT_TOKEN));
-            bot.addEventListener(new GreetingListener());
-        } catch (LoginException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

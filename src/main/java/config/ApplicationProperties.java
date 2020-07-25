@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ApplicationProperties {
+
+//TODO: Возможно придется сделать это статик сингалтоном
+public final class ApplicationProperties {
     private Properties properties;
 
     public ApplicationProperties() {

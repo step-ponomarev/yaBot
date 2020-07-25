@@ -1,5 +1,8 @@
 package bot.factory;
 
+import bot.commands.YaMusicCommandHandler;
+import bot.listeners.GreetingListener;
+import bot.listeners.YaMusicCommandsListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
@@ -19,6 +22,9 @@ public class BotFactory {
         if (bot == null) {
             //TODO: ДОбавить конфигурации
             bot = JDABuilder.createDefault(token)
+                    .addEventListeners(
+                            new GreetingListener(),
+                            new YaMusicCommandsListener(new YaMusicCommandHandler()))
                     .build();
         }
 

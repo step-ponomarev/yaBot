@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 
-public class GreetingListener extends ListenerAdapter {
+public final class GreetingListener extends ListenerAdapter {
     @Override
     public void onUnavailableGuildJoined(@Nonnull UnavailableGuildJoinedEvent event) {
         super.onUnavailableGuildJoined(event);
