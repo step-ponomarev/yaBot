@@ -1,7 +1,6 @@
 package bot.listeners;
 
 import bot.commands.Command;
-import bot.commands.ICommandHandler;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -9,48 +8,38 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Timer;
 
-public final class YaMusicCommandsListener extends ListenerAdapter {
-    private final ICommandHandler commandHandler;
+public final class PlayCommandListener extends ListenerAdapter {
+    private final Command command;
 
-    public YaMusicCommandsListener(final ICommandHandler commandHandler) {
-        this.commandHandler = commandHandler;
+    public PlayCommandListener(final Command command) {
+        this.command = command;
     }
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         try {
-            final var command = event.getMessage().getContentStripped();
+            final boolean isPlayCommand = event.getMessage().getContentRaw().startsWith(command.getCommand());
+            if (!isPlayCommand) {
+                return;
+            }
 
-            final var currentCommand = commandHandler.handleCommand(command);
+            final var textCommand = event.getMessage().getContentStripped();
+            if (!isCorrectCommand(textCommand)) {
+                throw new InvalidCommandParamsException(command);
+            }
 
-            execute(currentCommand, event);
+            handlePlaySong(event);
         } catch (InvalidCommandParamsException e) {
             event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
-                    e.getCommand().getPattern()).submit();
+                    e.getCommand().getPattern()).queue();
         } catch (Exception exception) {
             event.getMessage()
                     .getTextChannel()
-                    .sendMessage("Command is failed.").submit();
+                    .sendMessage("Command is failed.").queue();
         }
     }
 
-    private void execute(final Command command, final GuildMessageReceivedEvent event) throws Exception {
-        switch (command) {
-            case HELP:
-                event.getMessage().getTextChannel().sendMessage("HELP DOESN'T WORK").submit();
-                return;
-            case PLAY_SONG:
-                handlePlaySong(event);
-                return;
-            case SKIP_SONG:
-                event.getMessage().getTextChannel().sendMessage("SKIP DOESN'T WORK").submit();
-                return;
-            default:
-                return;
-        }
-    }
 
     private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException {
         final var strippetCommand = event.getMessage().getContentStripped().split(" ");
@@ -59,7 +48,8 @@ public final class YaMusicCommandsListener extends ListenerAdapter {
         final var voiceChannel = event.getMember().getVoiceState().getChannel();
 
         if (voiceChannel == null) {
-            event.getMessage().getTextChannel().sendMessage("You must be in voice channel").submit();
+            //TODO: Exception??
+            event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
             return;
         }
 
@@ -74,5 +64,9 @@ public final class YaMusicCommandsListener extends ListenerAdapter {
         }
 
         audioManager.closeAudioConnection();
+    }
+
+    private boolean isCorrectCommand(String contentStripped) {
+        return contentStripped.split(" ").length == command.getLength();
     }
 }

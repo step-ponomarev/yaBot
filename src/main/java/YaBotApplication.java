@@ -1,7 +1,4 @@
-import bot.commands.YaMusicCommandHandler;
 import bot.factory.BotFactory;
-import bot.listeners.GreetingListener;
-import bot.listeners.YaMusicCommandsListener;
 import config.ApplicationProperties;
 import consts.Consts;
 
