@@ -1,11 +1,20 @@
 package bot.listeners;
 
+import audio.AudioFactory;
+import audio.TrackScheduler;
 import bot.commands.Command;
+import bot.handler.AudioPlayerSendHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -41,7 +50,7 @@ public final class PlayCommandListener extends ListenerAdapter {
     }
 
 
-    private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException {
+    private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException, FileNotFoundException {
         final var strippetCommand = event.getMessage().getContentStripped().split(" ");
         final var url = new URL(strippetCommand[1]);
 
@@ -53,17 +62,52 @@ public final class PlayCommandListener extends ListenerAdapter {
             return;
         }
 
+        //TODO: Сделать красиов ежжи (рефакторинг)
+
         final var audioManager = event.getMember().getGuild().getAudioManager();
 
-        audioManager.openAudioConnection(voiceChannel);
-        //TODO: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        final var playerManager = AudioFactory.createPlayerManager();
+        final AudioPlayer player = playerManager.createPlayer();
 
-        audioManager.closeAudioConnection();
+        TrackScheduler trackScheduler = new TrackScheduler(player);
+        player.addListener(trackScheduler);
+
+        //TODO: Mock
+
+        final var mockedTrackPath = url.toString();//"https://youtu.be/MltJnhBLGtw";
+        playerManager.loadItem(mockedTrackPath, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                trackScheduler.queue(track);
+                trackScheduler.play();
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                for (AudioTrack track : playlist.getTracks()) {
+                    trackScheduler.queue(track);
+                }
+                trackScheduler.play();
+            }
+
+            @Override
+            public void noMatches() {
+                // Notify the user that we've got nothing
+                System.err.println("NOMATHES");
+            }
+
+            @Override
+            public void loadFailed(FriendlyException throwable) {
+                System.err.println("LOAD FAILED" + throwable.getMessage());
+                // Notify the user that everything exploded
+            }
+        });
+
+        audioManager.setSendingHandler(new AudioPlayerSendHandler(player));
+        audioManager.openAudioConnection(voiceChannel);
+
+
+        //TODO: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
     }
 
     private boolean isCorrectCommand(String contentStripped) {

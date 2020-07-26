@@ -9,6 +9,8 @@ public final class YaBotApplication {
 
     public static void main(String[] args) {
         try {
+
+            //TODO: Правильно ли так читать проперти? Мб подключить спринг?? Не слишком ли тяжело будет?
             properties.init(getResourceAsStream(Consts.PROPERTIES_FILE_NAME));
 
             var bot = BotFactory.getInstance(properties.getProperty(Consts.BOT_TOKEN));
