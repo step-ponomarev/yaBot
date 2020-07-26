@@ -1,8 +1,9 @@
 package bot.factory;
 
+import audio.AudioFactory;
 import bot.commands.Command;
 import bot.listeners.GreetingListener;
-import bot.listeners.PlayCommandListener;
+import bot.listeners.CommandListener;
 import bot.listeners.SkipCommandListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -21,12 +22,12 @@ public class BotFactory {
      */
     public static JDA getInstance(final String token) throws LoginException {
         if (bot == null) {
-            //TODO: ДОбавить конфигурации
+            //TODO: Кажется приедтся сделать 1 хендлер на команды. Нам нужен 1 плеер на комнату....
             bot = JDABuilder.createDefault(token)
                     .addEventListeners(
                             new GreetingListener(),
-                            new PlayCommandListener(Command.PLAY_SONG),
-                            new SkipCommandListener(Command.SKIP_SONG))
+                            new CommandListener(AudioFactory.createPlayerManager()),
+
                     .build();
         }
 
