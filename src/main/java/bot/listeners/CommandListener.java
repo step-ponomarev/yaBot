@@ -28,8 +28,8 @@ public final class CommandListener extends ListenerAdapter {
                     final AudioPlayerManager audioPlayerManager
             ) {
 
-        this.player = audioPlayerManager.createPlayer();
         this.audioPlayerManager = audioPlayerManager;
+        this.player = audioPlayerManager.createPlayer();
         this.trackScheduler = new TrackScheduler(player);
         this.audioPlayerSendHandler = new AudioPlayerSendHandler(player);
 
@@ -59,6 +59,14 @@ public final class CommandListener extends ListenerAdapter {
     private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException, FileNotFoundException {
         final var strippetCommand = event.getMessage().getContentStripped().split(" ");
         final var url = new URL(strippetCommand[1]);
+        final var guildId = event.getMessage().getGuild().getId();
+
+        //TODO: Реализовать раздельную обрабаботку запросов для каждой guild
+        System.err.println(guildId);
+
+        // Проверяем сохранен ли у нас LoadResultHandler по такому guildId
+        // если да, то ничего не делаем,
+        // если нет, до создаем и добавляем
 
         final var voiceChannel = event.getMember().getVoiceState().getChannel();
 

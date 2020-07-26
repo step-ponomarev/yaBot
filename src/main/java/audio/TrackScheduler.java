@@ -50,6 +50,20 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void play() {
+        if (player.getPlayingTrack() != null) {
+            return;
+        }
+
         this.player.playTrack(tracks.remove());
+    }
+
+    public void skip() {
+        player.stopTrack();
+
+        if (tracks.isEmpty()) {
+            return;
+        }
+
+        player.playTrack(tracks.remove());
     }
 }
