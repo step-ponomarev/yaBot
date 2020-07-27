@@ -1,6 +1,6 @@
 package bot.listeners;
 
-import bot.GuildPlayer;
+import bot.player.GuildPlayer;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

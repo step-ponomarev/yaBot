@@ -1,7 +1,7 @@
 package bot.factory;
 
 import audio.AudioFactory;
-import bot.GuildPlayer;
+import bot.player.GuildPlayer;
 import bot.listeners.GreetingListener;
 import bot.listeners.AudioCommandsListener;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;

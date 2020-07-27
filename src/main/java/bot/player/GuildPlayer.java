@@ -1,4 +1,4 @@
-package bot;
+package bot.player;
 
 import audio.LoadResultHandler;
 import audio.TrackScheduler;
@@ -23,6 +23,7 @@ public class GuildPlayer {
     private final Set<String> initGuilds;
 
     public GuildPlayer(final AudioPlayerManager playerManager) {
+        //TODO: Сделать одну мэму, вынести все хендлеры в другое место
         this.playerManager = playerManager;
         this.loadResultHandlerMap = new HashMap<>();
         this.sendHandlerMap = new HashMap<>();
