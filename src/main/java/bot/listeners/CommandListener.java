@@ -4,7 +4,6 @@ import audio.LoadResultHandler;
 import audio.TrackScheduler;
 import bot.commands.Command;
 import bot.handler.AudioPlayerSendHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -14,14 +13,14 @@ import javax.annotation.Nonnull;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 //DOCS: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
 
 public final class CommandListener extends ListenerAdapter {
     private final AudioPlayerManager audioPlayerManager;
-    private final AudioPlayer player;
-    private final TrackScheduler trackScheduler;
-    private final AudioPlayerSendHandler audioPlayerSendHandler;
+    private final Map<String, LoadResultHandler> audioLoadHandlers;
 
     public CommandListener
             (
@@ -29,11 +28,7 @@ public final class CommandListener extends ListenerAdapter {
             ) {
 
         this.audioPlayerManager = audioPlayerManager;
-        this.player = audioPlayerManager.createPlayer();
-        this.trackScheduler = new TrackScheduler(player);
-        this.audioPlayerSendHandler = new AudioPlayerSendHandler(player);
-
-        player.addListener(trackScheduler);
+        this.audioLoadHandlers = new HashMap<>();
     }
 
     @Override
@@ -62,7 +57,6 @@ public final class CommandListener extends ListenerAdapter {
         final var guildId = event.getMessage().getGuild().getId();
 
         //TODO: Реализовать раздельную обрабаботку запросов для каждой guild
-        System.err.println(guildId);
 
         // Проверяем сохранен ли у нас LoadResultHandler по такому guildId
         // если да, то ничего не делаем,
@@ -79,11 +73,22 @@ public final class CommandListener extends ListenerAdapter {
         //TODO: Сделать красиов ежжи (рефакторинг)
         final var audioManager = event.getMember().getGuild().getAudioManager();
 
+        if (!audioLoadHandlers.containsKey(guildId)) {
+            //Все ниже должно создаваться для каждой гилды свое
+            var player = audioPlayerManager.createPlayer();
+            var trackScheduler = new TrackScheduler(player);
+            player.addListener(trackScheduler);
+
+            var audioPlayerSendHandler = new AudioPlayerSendHandler(player);
+            audioManager.setSendingHandler(audioPlayerSendHandler);
+
+            audioLoadHandlers.put(guildId, new LoadResultHandler(trackScheduler));
+        }
+
         //TODO: Mock
         final var mockedTrackPath = url.toString(); //"https://youtu.be/MltJnhBLGtw";
-        audioPlayerManager.loadItem(mockedTrackPath, new LoadResultHandler(trackScheduler));
+        audioPlayerManager.loadItem(mockedTrackPath, audioLoadHandlers.get(guildId));
 
-        audioManager.setSendingHandler(audioPlayerSendHandler);
         audioManager.openAudioConnection(voiceChannel);
     }
 
