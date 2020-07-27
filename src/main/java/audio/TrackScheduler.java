@@ -17,23 +17,6 @@ public class TrackScheduler extends AudioEventAdapter {
         this.tracks = new LinkedList<AudioTrack>();
     }
 
-    //TODO: Разобраться шо тут таки нада делать
-
-    @Override
-    public void onPlayerPause(AudioPlayer player) {
-        super.onPlayerPause(player);
-    }
-
-    @Override
-    public void onPlayerResume(AudioPlayer player) {
-        super.onPlayerResume(player);
-    }
-
-    @Override
-    public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        super.onTrackStart(player, track);
-    }
-
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (tracks.isEmpty()) {
@@ -41,8 +24,6 @@ public class TrackScheduler extends AudioEventAdapter {
         }
 
         player.playTrack(tracks.remove());
-
-        System.err.println("IT FINISHED");
     }
 
     public void queue(AudioTrack track) {

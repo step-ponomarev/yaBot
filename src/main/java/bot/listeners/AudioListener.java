@@ -1,8 +1,10 @@
 package bot.listeners;
 
-import bot.player.GuildPlayer;
+import audio.GuildPlayerManager;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
+import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -14,11 +16,11 @@ import java.net.URL;
 
 //DOCS: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
 
-public final class AudioCommandsListener extends ListenerAdapter {
-    private final GuildPlayer player;
+public final class AudioListener extends ListenerAdapter {
+    private final GuildPlayerManager playerManager;
 
-    public AudioCommandsListener(final GuildPlayer guildPlayer) {
-        this.player = guildPlayer;
+    public AudioListener(final GuildPlayerManager guildPlayerManager) {
+        this.playerManager = guildPlayerManager;
     }
 
     @Override
@@ -91,15 +93,17 @@ public final class AudioCommandsListener extends ListenerAdapter {
             return;
         }
 
-        player.init(guildId);
+        playerManager.init(guildId);
 
         final var audioManager = event.getMember().getGuild().getAudioManager();
-        final var sendHandler = player.getSendHandler(guildId);
+        final var sendHandler = playerManager.getSendHandler(guildId);
         audioManager.setSendingHandler(sendHandler);
 
         final var mockedTrackPath = url.toString(); //"https://youtu.be/MltJnhBLGtw";
-        player.addTrack(mockedTrackPath, guildId);
+        playerManager.addTrack(mockedTrackPath, guildId);
 
-        audioManager.openAudioConnection(voiceChannel);
+        if (!audioManager.isConnected()) {
+            audioManager.openAudioConnection(voiceChannel);
+        }
     }
 }

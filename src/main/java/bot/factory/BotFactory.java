@@ -1,9 +1,9 @@
 package bot.factory;
 
 import audio.AudioFactory;
-import bot.player.GuildPlayer;
+import audio.GuildPlayerManager;
 import bot.listeners.GreetingListener;
-import bot.listeners.AudioCommandsListener;
+import bot.listeners.AudioListener;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -24,10 +24,10 @@ public class BotFactory {
         if (bot == null) {
             //TODO: вынести это дело в отдельные методы или не надо...
             AudioPlayerManager playerManager = AudioFactory.createPlayerManager();
-            GuildPlayer guildPlayer = new GuildPlayer(playerManager);
+            GuildPlayerManager guildPlayerManager = new GuildPlayerManager(playerManager);
 
             final var greetingListener = new GreetingListener();
-            final var commandListener = new AudioCommandsListener(guildPlayer);
+            final var commandListener = new AudioListener(guildPlayerManager);
 
             bot = JDABuilder.createDefault(token)
                     .addEventListeners(greetingListener, commandListener)
