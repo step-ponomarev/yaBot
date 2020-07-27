@@ -96,6 +96,7 @@ public final class AudioListener extends ListenerAdapter {
         playerManager.init(guildId);
 
         final var audioManager = event.getMember().getGuild().getAudioManager();
+
         final var sendHandler = playerManager.getSendHandler(guildId);
         audioManager.setSendingHandler(sendHandler);
 
