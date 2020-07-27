@@ -1,6 +1,5 @@
 package audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -16,12 +15,5 @@ public class AudioFactory {
         }
 
         return playerManager;
-    }
-
-    public static AudioPlayer createAudioPlayer(final AudioPlayerManager playerManager) {
-        var player = playerManager.createPlayer();
-        player.addListener(new TrackScheduler(player));
-
-        return player;
     }
 }

@@ -41,8 +41,7 @@ public final class PlayCommandListener extends ListenerAdapter {
                     .sendMessage("Command is failed.").queue();
         }
     }
-
-
+    
     private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException {
         final var strippetCommand = event.getMessage().getContentStripped().split(" ");
         final var url = new URL(strippetCommand[1]);
