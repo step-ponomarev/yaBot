@@ -1,6 +1,6 @@
 package exceptions;
 
-import bot.commands.Command;
+import bot.command.Command;
 import lombok.Getter;
 
 public class InvalidCommandParamsException extends RuntimeException {
