@@ -35,7 +35,7 @@ public class GuildPlayerManager {
         var audioService = GuildAudioService.builder()
                 .player(player)
                 .audioPlayerSendHandler(sendHandler)
-                .audioEventAdapter(trackScheduler)
+                .trackScheduler(trackScheduler)
                 .loadResultHandler(loadResultHandler)
                 .build();
 
@@ -47,6 +47,12 @@ public class GuildPlayerManager {
         final var loadResultHandler = audioServiceMap.get(guildId).getLoadResultHandler();
 
         playerManager.loadItem(path, loadResultHandler);
+    }
+
+    public void skipTrack(final String guildId) {
+        final var trackScheduler = audioServiceMap.get(guildId).getTrackScheduler();
+
+        trackScheduler.skip();
     }
 
     public AudioSendHandler getSendHandler(final String guildId) {

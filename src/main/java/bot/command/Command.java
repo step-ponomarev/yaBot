@@ -19,7 +19,11 @@ public enum Command {
         this.length = length;
     }
 
-    public boolean isCorrectCommand(String commandStr) {
+    public boolean isCorrectArgsAmount(String commandStr) {
         return commandStr.split(" ").length == this.length;
+    }
+
+    public boolean isCorrectCommand(String commandStr) {
+        return commandStr.startsWith(command);
     }
 };

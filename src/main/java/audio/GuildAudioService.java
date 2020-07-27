@@ -9,8 +9,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GuildAudioService {
-    private AudioPlayer player;
-    private AudioEventAdapter audioEventAdapter;
-    private AudioLoadResultHandler loadResultHandler;
-    private AudioPlayerSendHandler audioPlayerSendHandler;
+    private final AudioPlayer player;
+    private final TrackScheduler trackScheduler;
+    private final AudioLoadResultHandler loadResultHandler;
+    private final AudioPlayerSendHandler audioPlayerSendHandler;
 }
