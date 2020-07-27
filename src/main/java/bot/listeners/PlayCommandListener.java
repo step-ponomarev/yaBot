@@ -3,38 +3,35 @@ package bot.listeners;
 import audio.GuildPlayerManager;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
-import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
-import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 //DOCS: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
 
-public final class AudioListener extends ListenerAdapter {
+public final class PlayCommandListener extends ListenerAdapter {
+    private final Command command;
     private final GuildPlayerManager playerManager;
 
-    public AudioListener(final GuildPlayerManager guildPlayerManager) {
+    public PlayCommandListener(final Command command, final GuildPlayerManager guildPlayerManager) {
+        this.command = command;
         this.playerManager = guildPlayerManager;
     }
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
         final var message = event.getMessage().getContentStripped();
-        final var command = defineCommand(message);
-
-        if (command == null) {
-            return;
-        }
 
         try {
-            checkCommandParams(message, command);
-            executeCommand(event, command);
+            if (!command.isCorrectCommand(message)) {
+                throw new InvalidCommandParamsException(command);
+            }
+
+            handlePlaySong(event);
         } catch (InvalidCommandParamsException e) {
             event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
                     e.getCommand().getPattern()).queue();
@@ -45,40 +42,6 @@ public final class AudioListener extends ListenerAdapter {
         }
     }
 
-    private Command defineCommand(String message) {
-        final boolean isPlayCommand = message.startsWith(Command.PLAY_SONG.getCommand());
-        final boolean isSkipCommand = message.startsWith(Command.SKIP_SONG.getCommand());
-
-        if (isPlayCommand) {
-            return Command.PLAY_SONG;
-        } else if (isSkipCommand) {
-            return Command.SKIP_SONG;
-        }
-
-        return null;
-    }
-
-    private void checkCommandParams(String message, Command command) {
-        if (!isCorrectCommand(message, command)) {
-            throw new InvalidCommandParamsException(command);
-        }
-    }
-
-    private boolean isCorrectCommand(String contentStripped, Command command) {
-        return contentStripped.split(" ").length == command.getLength();
-    }
-
-    private void executeCommand(GuildMessageReceivedEvent event, Command command) throws MalformedURLException, FileNotFoundException {
-
-        switch (command) {
-            case PLAY_SONG:
-                handlePlaySong(event);
-                break;
-            case SKIP_SONG:
-                return;
-
-        }
-    }
 
     private void handlePlaySong(final GuildMessageReceivedEvent event) throws MalformedURLException {
         final var strippetCommand = event.getMessage().getContentStripped().split(" ");

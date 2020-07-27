@@ -3,7 +3,7 @@ package bot.factory;
 import audio.AudioFactory;
 import audio.GuildPlayerManager;
 import bot.listeners.GreetingListener;
-import bot.listeners.AudioListener;
+import bot.listeners.PlayCommandListener;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -27,7 +27,7 @@ public class BotFactory {
             GuildPlayerManager guildPlayerManager = new GuildPlayerManager(playerManager);
 
             final var greetingListener = new GreetingListener();
-            final var commandListener = new AudioListener(guildPlayerManager);
+            final var commandListener = new PlayCommandListener(guildPlayerManager);
 
             bot = JDABuilder.createDefault(token)
                     .addEventListeners(greetingListener, commandListener)

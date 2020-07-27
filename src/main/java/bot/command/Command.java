@@ -18,4 +18,8 @@ public enum Command {
         this.pattern = pattern;
         this.length = length;
     }
+
+    public boolean isCorrectCommand(String commandStr) {
+        return commandStr.split(" ").length == this.length;
+    }
 };
