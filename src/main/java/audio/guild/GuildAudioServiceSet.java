@@ -1,16 +1,17 @@
-package audio;
+package audio.guild;
 
+import audio.TrackScheduleAdapter;
+import audio.handlers.AudioPlayerSendHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class GuildAudioService {
+public class GuildAudioServiceSet {
     private final AudioPlayer player;
-    private final TrackScheduler trackScheduler;
+    private final TrackScheduleAdapter trackScheduleAdapter;
     private final AudioLoadResultHandler loadResultHandler;
     private final AudioPlayerSendHandler audioPlayerSendHandler;
 }

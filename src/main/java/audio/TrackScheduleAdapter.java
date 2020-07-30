@@ -8,11 +8,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class TrackScheduler extends AudioEventAdapter {
+public class TrackScheduleAdapter extends AudioEventAdapter {
     private final AudioPlayer player;
     private final Queue<AudioTrack> tracks;
 
-    public TrackScheduler(AudioPlayer player) {
+    public TrackScheduleAdapter(AudioPlayer player) {
         this.player = player;
         this.tracks = new LinkedList<AudioTrack>();
     }

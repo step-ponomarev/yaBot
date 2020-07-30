@@ -1,29 +1,30 @@
-package audio;
+package audio.handlers;
 
+import audio.TrackScheduleAdapter;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 public class LoadResultHandler implements AudioLoadResultHandler {
-    private final TrackScheduler trackScheduler;
+    private final TrackScheduleAdapter trackScheduleAdapter;
 
-    public LoadResultHandler(final TrackScheduler trackScheduler) {
-        this.trackScheduler = trackScheduler;
+    public LoadResultHandler(final TrackScheduleAdapter trackScheduleAdapter) {
+        this.trackScheduleAdapter = trackScheduleAdapter;
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        trackScheduler.queue(track);
-        trackScheduler.play();
+        trackScheduleAdapter.queue(track);
+        trackScheduleAdapter.play();
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
         for (AudioTrack track : playlist.getTracks()) {
-            trackScheduler.queue(track);
+            trackScheduleAdapter.queue(track);
         }
-        trackScheduler.play();
+        trackScheduleAdapter.play();
     }
 
     @Override

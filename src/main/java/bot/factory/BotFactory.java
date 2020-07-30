@@ -1,7 +1,7 @@
 package bot.factory;
 
-import audio.AudioFactory;
-import audio.GuildPlayerManager;
+import audio.factory.AudioFactory;
+import audio.guild.GuildPlayerFasade;
 import bot.command.Command;
 import bot.listeners.GreetingListener;
 import bot.listeners.PlayCommandListener;
@@ -26,11 +26,11 @@ public class BotFactory {
         if (bot == null) {
             //TODO: вынести это дело в отдельные методы или не надо...
             AudioPlayerManager playerManager = AudioFactory.createPlayerManager();
-            GuildPlayerManager guildPlayerManager = new GuildPlayerManager(playerManager);
+            GuildPlayerFasade guildPlayerFasade = new GuildPlayerFasade(playerManager);
 
             final var greetingListener = new GreetingListener();
-            final var playCommandListener = new PlayCommandListener(Command.PLAY_SONG, guildPlayerManager);
-            final var skipCommandListener = new SkipCommandListener(Command.SKIP_SONG, guildPlayerManager);
+            final var playCommandListener = new PlayCommandListener(Command.PLAY_SONG, guildPlayerFasade);
+            final var skipCommandListener = new SkipCommandListener(Command.SKIP_SONG, guildPlayerFasade);
 
             bot = JDABuilder.createDefault(token)
                     .addEventListeners(greetingListener, playCommandListener, skipCommandListener)

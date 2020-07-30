@@ -1,6 +1,6 @@
 package bot.listeners;
 
-import audio.GuildPlayerManager;
+import audio.guild.GuildPlayerFasade;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -10,9 +10,9 @@ import javax.annotation.Nonnull;
 
 public class SkipCommandListener extends ListenerAdapter {
     private final Command command;
-    private final GuildPlayerManager playerManager;
+    private final GuildPlayerFasade playerManager;
 
-    public SkipCommandListener(Command command, GuildPlayerManager playerManager) {
+    public SkipCommandListener(Command command, GuildPlayerFasade playerManager) {
         this.command = command;
         this.playerManager = playerManager;
     }

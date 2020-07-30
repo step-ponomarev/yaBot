@@ -1,5 +1,8 @@
-package audio;
+package audio.guild;
 
+import audio.handlers.LoadResultHandler;
+import audio.TrackScheduleAdapter;
+import audio.handlers.AudioPlayerSendHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 
@@ -8,12 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GuildPlayerManager {
+public class GuildPlayerFasade {
     private final AudioPlayerManager playerManager;
-    private final Map<String, GuildAudioService> audioServiceMap;
+    private final Map<String, GuildAudioServiceSet> audioServiceMap;
     private final Set<String> initGuilds;
 
-    public GuildPlayerManager(final AudioPlayerManager playerManager) {
+    public GuildPlayerFasade(final AudioPlayerManager playerManager) {
         //TODO: Сделать одну мэму, вынести все хендлеры в другое место
         this.initGuilds = new HashSet<>();
         this.playerManager = playerManager;
@@ -26,16 +29,16 @@ public class GuildPlayerManager {
         }
 
         var player = playerManager.createPlayer();
-        var trackScheduler = new TrackScheduler(player);
+        var trackScheduler = new TrackScheduleAdapter(player);
         var loadResultHandler = new LoadResultHandler(trackScheduler);
         var sendHandler = new AudioPlayerSendHandler(player);
 
         player.addListener(trackScheduler);
 
-        var audioService = GuildAudioService.builder()
+        var audioService = GuildAudioServiceSet.builder()
                 .player(player)
                 .audioPlayerSendHandler(sendHandler)
-                .trackScheduler(trackScheduler)
+                .trackScheduleAdapter(trackScheduler)
                 .loadResultHandler(loadResultHandler)
                 .build();
 
@@ -50,7 +53,7 @@ public class GuildPlayerManager {
     }
 
     public void skipTrack(final String guildId) {
-        final var trackScheduler = audioServiceMap.get(guildId).getTrackScheduler();
+        final var trackScheduler = audioServiceMap.get(guildId).getTrackScheduleAdapter();
 
         trackScheduler.skip();
     }

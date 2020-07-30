@@ -1,6 +1,6 @@
 package bot.listeners;
 
-import audio.GuildPlayerManager;
+import audio.guild.GuildPlayerFasade;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -15,11 +15,11 @@ import java.net.URL;
 
 public final class PlayCommandListener extends ListenerAdapter {
     private final Command command;
-    private final GuildPlayerManager playerManager;
+    private final GuildPlayerFasade playerManager;
 
-    public PlayCommandListener(final Command command, final GuildPlayerManager guildPlayerManager) {
+    public PlayCommandListener(final Command command, final GuildPlayerFasade guildPlayerFasade) {
         this.command = command;
-        this.playerManager = guildPlayerManager;
+        this.playerManager = guildPlayerFasade;
     }
 
     @Override
@@ -65,8 +65,8 @@ public final class PlayCommandListener extends ListenerAdapter {
         final var sendHandler = playerManager.getSendHandler(guildId);
         audioManager.setSendingHandler(sendHandler);
 
-        final var mockedTrackPath = url.toString(); //"https://youtu.be/MltJnhBLGtw";
-        playerManager.addTrack(mockedTrackPath, guildId);
+        final var trackPath = url.toString(); //"https://youtu.be/MltJnhBLGtw";
+        playerManager.addTrack(trackPath, guildId);
 
         if (!audioManager.isConnected()) {
             audioManager.openAudioConnection(voiceChannel);
