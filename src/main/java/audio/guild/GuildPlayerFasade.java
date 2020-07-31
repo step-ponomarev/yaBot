@@ -46,6 +46,12 @@ public class GuildPlayerFasade {
         initGuilds.add(guildId);
     }
 
+    public AudioSendHandler getSendHandler(final String guildId) {
+        final var sendHandler = audioServiceMap.get(guildId).getAudioPlayerSendHandler();
+
+        return sendHandler;
+    }
+
     public void addTrack(final String path, final String guildId) {
         final var loadResultHandler = audioServiceMap.get(guildId).getLoadResultHandler();
 
@@ -58,9 +64,15 @@ public class GuildPlayerFasade {
         trackScheduler.skip();
     }
 
-    public AudioSendHandler getSendHandler(final String guildId) {
-        final var sendHandler = audioServiceMap.get(guildId).getAudioPlayerSendHandler();
+    public void pauseTrack(final String guildId) {
+        final var trackScheduler = audioServiceMap.get(guildId).getTrackScheduleAdapter();
 
-        return sendHandler;
+        trackScheduler.pause();
+    }
+
+    public void resumePlay(final String guildId) {
+        final var trackScheduler = audioServiceMap.get(guildId).getTrackScheduleAdapter();
+
+        trackScheduler.resume();
     }
 }

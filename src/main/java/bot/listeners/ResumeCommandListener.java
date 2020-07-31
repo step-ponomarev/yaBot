@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.annotation.Nonnull;
 
 @RequiredArgsConstructor
-public class SkipCommandListener extends ListenerAdapter {
+public class ResumeCommandListener extends ListenerAdapter {
     private final Command command;
     private final GuildPlayerFasade playerManager;
 
@@ -27,7 +27,7 @@ public class SkipCommandListener extends ListenerAdapter {
                 throw new InvalidCommandParamsException(command);
             }
 
-            handleSkipSong(event);
+            handleResumeSong(event);
         } catch (InvalidCommandParamsException e) {
             event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
                     e.getCommand().getPattern()).queue();
@@ -38,20 +38,10 @@ public class SkipCommandListener extends ListenerAdapter {
         }
     }
 
-    private void handleSkipSong(GuildMessageReceivedEvent event) {
-        final var guildId = event.getMessage().getGuild().getId();
-        final var voiceChannel = event.getMember().getVoiceState().getChannel();
-        final var audioManager = event.getMember().getGuild().getAudioManager();
+    private void handleResumeSong(GuildMessageReceivedEvent event) {
+        final var guildId = event.getGuild().getId();
 
-        if (!audioManager.isConnected()) {
-            return;
-        }
-
-        if (voiceChannel == null) {
-            event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
-            return;
-        }
-
-        playerManager.skipTrack(guildId);
+        playerManager.init(guildId);
+        playerManager.resumePlay(guildId);
     }
 }

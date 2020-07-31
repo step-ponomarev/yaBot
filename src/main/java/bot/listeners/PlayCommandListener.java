@@ -3,6 +3,7 @@ package bot.listeners;
 import audio.guild.GuildPlayerFasade;
 import bot.command.Command;
 import exceptions.InvalidCommandParamsException;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -12,15 +13,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 //DOCS: https://github.com/DV8FromTheWorld/JDA/wiki/4%29-Making-a-Music-Bot#Sending-Audio-to-an-Open-Audio-Connection
-
+@RequiredArgsConstructor
 public final class PlayCommandListener extends ListenerAdapter {
     private final Command command;
     private final GuildPlayerFasade playerManager;
-
-    public PlayCommandListener(final Command command, final GuildPlayerFasade guildPlayerFasade) {
-        this.command = command;
-        this.playerManager = guildPlayerFasade;
-    }
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {

@@ -47,4 +47,20 @@ public class TrackScheduleAdapter extends AudioEventAdapter {
 
         player.playTrack(tracks.remove());
     }
+
+    public void pause() {
+        if (player.isPaused()) {
+            return;
+        }
+
+        player.setPaused(true);
+    }
+
+    public void resume() {
+        if (!player.isPaused()) {
+            return;
+        }
+
+        player.setPaused(false);
+    }
 }
