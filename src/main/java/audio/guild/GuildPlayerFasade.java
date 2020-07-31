@@ -46,6 +46,10 @@ public class GuildPlayerFasade {
         initGuilds.add(guildId);
     }
 
+    public boolean isInitialized(final String guildId) {
+        return initGuilds.contains(guildId);
+    }
+
     public AudioSendHandler getSendHandler(final String guildId) {
         final var sendHandler = audioServiceMap.get(guildId).getAudioPlayerSendHandler();
 

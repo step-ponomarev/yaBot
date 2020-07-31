@@ -40,6 +40,12 @@ public class ResumeCommandListener extends ListenerAdapter {
 
     private void handleResumeSong(GuildMessageReceivedEvent event) {
         final var guildId = event.getGuild().getId();
+        final var voiceChannel = event.getMember().getVoiceState().getChannel();
+
+        if (voiceChannel == null) {
+            event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
+            return;
+        }
 
         playerManager.init(guildId);
         playerManager.resumePlay(guildId);

@@ -50,17 +50,18 @@ public final class PlayCommandListener extends ListenerAdapter {
         final var url = new URL(strippetCommand[1]);
         final var guildId = event.getMessage().getGuild().getId();
 
-
         if (voiceChannel == null) {
             event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
             return;
         }
 
-        playerManager.init(guildId);
+        if (!playerManager.isInitialized(guildId)) {
+            playerManager.init(guildId);
 
-        final var sendHandler = playerManager.getSendHandler(guildId);
-        audioManager.setSendingHandler(sendHandler);
-
+            final var sendHandler = playerManager.getSendHandler(guildId);
+            audioManager.setSendingHandler(sendHandler);
+        }
+        
         final var trackPath = url.toString(); //"https://youtu.be/MltJnhBLGtw";
         playerManager.addTrack(trackPath, guildId);
 
