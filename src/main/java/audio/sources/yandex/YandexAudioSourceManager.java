@@ -7,17 +7,21 @@ import audio.sources.yandex.parser.YandexUrlParser;
 import audio.sources.yandex.service.DefaultYandexApiService;
 import audio.sources.yandex.service.YandexApiService;
 import audio.sources.yandex.structures.YandexId;
+import com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile;
 import com.sedmelluq.discord.lavaplayer.container.mp3.Mp3AudioTrack;
+import com.sedmelluq.discord.lavaplayer.format.AudioPlayerInputStream;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
+import com.sedmelluq.discord.lavaplayer.tools.io.NonSeekableInputStream;
+import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.info.AudioTrackInfoBuilder;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONObject;
 
+import javax.sound.midi.Track;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -48,35 +52,52 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 
   @Override
   public AudioItem loadItem(DefaultAudioPlayerManager manager, AudioReference reference) {
-    final AudioItem audioItem = handleReference(reference);
-
     // new Mp3AudioTrack() Должны вернуть для трека
     // new BasicAudioPlaylist() Для плейлиста/артиста
     // Mp3AudioTrack();
 
-    return audioItem;
+    try {
+      final AudioItem audioItem = handleReference(reference);
+
+      return audioItem;
+    } catch (Exception e) {
+      return  null;
+    }
   }
 
-  private AudioItem handleReference(AudioReference reference) {
+  private AudioItem handleReference(AudioReference reference) throws IOException {
     final YandexId id = urlParser.defineUrlType(reference.identifier);
 
     if (id == null) {
       return null;
     }
 
-    JSONObject infoJson = null;
-    AudioItem item = null;
-    switch (id.getType()) {
-      case TRACK:
-        infoJson = apiService.getTrackInfoById(id.id);
-        infoJson = dataReader.findTrackData(infoJson);
+    var buffer = apiService.getTrackInputStreamById(id.id);
+    var trackInfo = new AudioTrackInfo(
+        "TEST",
+        "TEST",
+        211,
+        "SECRET",
+        false,
+        ""
+    );
 
-      case ALBUM:
-      case PLAYLIST:
-        infoJson = apiService.getPlayListInfoById(id.id);
-    }
+    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
 
-    return item;
+
+//    JSONObject infoJson = null;
+//    AudioItem item = null;
+//    switch (id.getType()) {
+//      case TRACK:
+//        infoJson = apiService.getTrackInfoById(id.id);
+//        infoJson = dataReader.findTrackData(infoJson);
+//
+//      case ALBUM:
+//      case PLAYLIST:
+//        infoJson = apiService.getPlayListInfoById(id.id);
+//    }
+
+    //return item;
   }
 
   @Override
