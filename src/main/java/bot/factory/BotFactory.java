@@ -22,7 +22,6 @@ public class BotFactory {
      */
     public static JDA getInstance(final String token) throws LoginException {
         if (bot == null) {
-            //TODO: вынести это дело в отдельные методы или не надо...
             AudioPlayerManager playerManager = AudioFactory.createPlayerManager();
             GuildPlayerFasade guildPlayerFasade = new GuildPlayerFasade(playerManager);
 
