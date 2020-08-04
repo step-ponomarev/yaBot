@@ -7,13 +7,13 @@ import audio.sources.yandex.parser.YandexUrlParser;
 import audio.sources.yandex.service.DefaultYandexApiService;
 import audio.sources.yandex.service.YandexApiService;
 import audio.sources.yandex.structures.YandexId;
+import com.sedmelluq.discord.lavaplayer.container.flac.FlacAudioTrack;
 import com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaStreamingFile;
 import com.sedmelluq.discord.lavaplayer.container.mp3.Mp3AudioTrack;
 import com.sedmelluq.discord.lavaplayer.format.AudioPlayerInputStream;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.tools.io.NonSeekableInputStream;
-import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
+import com.sedmelluq.discord.lavaplayer.tools.io.*;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -22,16 +22,21 @@ import com.sedmelluq.discord.lavaplayer.track.info.AudioTrackInfoBuilder;
 import lombok.RequiredArgsConstructor;
 
 import javax.sound.midi.Track;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
+
+import static com.sedmelluq.discord.lavaplayer.tools.Units.DURATION_MS_UNKNOWN;
 
 @RequiredArgsConstructor
 public class YandexAudioSourceManager implements AudioSourceManager {
   private final YandexUrlParser urlParser;
   private final YandexApiService apiService;
   private final YandexDataReader dataReader;
+  private final HttpInterfaceManager httpInterfaceManager;
 
   public static YandexAudioSourceManager createDefaultYandexSourceManager() {
     final YandexUrlParser urlParser = new DefaultYandexUrlParser();
@@ -39,8 +44,9 @@ public class YandexAudioSourceManager implements AudioSourceManager {
         HttpClient.newHttpClient()
     );
     final YandexDataReader dataReader = new DefaultYandexDataReader();
+    final HttpInterfaceManager httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
 
-    final YandexAudioSourceManager sourceManager = new YandexAudioSourceManager(urlParser, apiService, dataReader);
+    final YandexAudioSourceManager sourceManager = new YandexAudioSourceManager(urlParser, apiService, dataReader, httpInterfaceManager);
 
     return sourceManager;
   }
@@ -52,20 +58,17 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 
   @Override
   public AudioItem loadItem(DefaultAudioPlayerManager manager, AudioReference reference) {
-    // new Mp3AudioTrack() Должны вернуть для трека
-    // new BasicAudioPlaylist() Для плейлиста/артиста
-    // Mp3AudioTrack();
-
     try {
       final AudioItem audioItem = handleReference(reference);
 
       return audioItem;
     } catch (Exception e) {
-      return  null;
+      e.printStackTrace();
+      return null;
     }
   }
 
-  private AudioItem handleReference(AudioReference reference) throws IOException {
+  private AudioItem handleReference(AudioReference reference) throws IOException, UnsupportedAudioFileException, URISyntaxException {
     final YandexId id = urlParser.defineUrlType(reference.identifier);
 
     if (id == null) {
@@ -76,12 +79,18 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     var trackInfo = new AudioTrackInfo(
         "TEST",
         "TEST",
-        211,
+        DURATION_MS_UNKNOWN,
         "SECRET",
         false,
-        ""
+        apiService.getTrackUrlById(id.id)
     );
 
+//    return new Mp3AudioTrack(trackInfo,
+//        new PersistentHttpStream(
+//            httpInterfaceManager.getInterface(),
+//            apiService.getTrackUriById(id.id),
+//            null)
+//    );
     return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
 
 

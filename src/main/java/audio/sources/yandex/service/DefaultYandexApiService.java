@@ -1,14 +1,16 @@
 package audio.sources.yandex.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
+import java.io.InputStream;
+import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -49,7 +51,16 @@ public class DefaultYandexApiService implements YandexApiService {
   }
 
   @Override
-  public BufferedInputStream getTrackInputStreamById(String id) throws IOException {
+  public InputStream getTrackInputStreamById(String id) throws IOException, UnsupportedAudioFileException, URISyntaxException {
+    final String downloadLink = getTrackUrlById(id);
+
+    System.out.println(downloadLink);
+
+    return getInputStreamByUrl(downloadLink);
+  }
+
+  @Override
+  public String getTrackUrlById(String id) throws URISyntaxException {
     final JSONObject trackInfo = getTrackInfoById(id);
     final String storageDir = getStorageDir(trackInfo);
     final JSONObject storageInfo = getStoreInfoByDir(storageDir);
@@ -66,9 +77,7 @@ public class DefaultYandexApiService implements YandexApiService {
         Map.of("host", host, "hashedUrl", hash, "ts", ts, "path", path),
         "${", "}");
 
-    System.out.println(downloadLink);
-
-    return getInputStreamByUrl(downloadLink);
+    return downloadLink;
   }
 
   private String getStorageDir(JSONObject trackInfo) {
@@ -93,10 +102,10 @@ public class DefaultYandexApiService implements YandexApiService {
     return url;
   }
 
-  private BufferedInputStream getInputStreamByUrl(String url) throws IOException {
-    BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+  private InputStream getInputStreamByUrl(String url) throws IOException, UnsupportedAudioFileException {
+    HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 
-    return in;
+    return con.getInputStream();
   }
 
   private JSONObject GET(HttpRequest request) {
