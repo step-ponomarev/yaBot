@@ -51,7 +51,7 @@ public class DefaultYandexApiService implements YandexApiService {
   }
 
   @Override
-  public InputStream getTrackInputStreamById(String id) throws IOException, UnsupportedAudioFileException, URISyntaxException {
+  public InputStream getTrackInputStreamById(String id) throws IOException {
     final String downloadLink = getTrackUrlById(id);
 
     System.out.println(downloadLink);
@@ -60,7 +60,7 @@ public class DefaultYandexApiService implements YandexApiService {
   }
 
   @Override
-  public String getTrackUrlById(String id) throws URISyntaxException {
+  public String getTrackUrlById(String id) {
     final JSONObject trackInfo = getTrackInfoById(id);
     final String storageDir = getStorageDir(trackInfo);
     final JSONObject storageInfo = getStoreInfoByDir(storageDir);
@@ -102,7 +102,7 @@ public class DefaultYandexApiService implements YandexApiService {
     return url;
   }
 
-  private InputStream getInputStreamByUrl(String url) throws IOException, UnsupportedAudioFileException {
+  private InputStream getInputStreamByUrl(String url) throws IOException {
     HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 
     return con.getInputStream();

@@ -10,6 +10,6 @@ import java.net.URISyntaxException;
 public interface YandexApiService {
     JSONObject getTrackInfoById(String id);
     JSONObject getPlayListInfoById(String id);
-    InputStream getTrackInputStreamById(String id) throws IOException, UnsupportedAudioFileException, URISyntaxException;
+    InputStream getTrackInputStreamById(String id) throws IOException;
     String getTrackUrlById(String id) throws URISyntaxException;
 }
