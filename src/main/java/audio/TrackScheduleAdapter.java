@@ -9,66 +9,66 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class TrackScheduleAdapter extends AudioEventAdapter {
-    private final AudioPlayer player;
-    private final Queue<AudioTrack> tracks;
+  private final AudioPlayer player;
+  private final Queue<AudioTrack> tracks;
 
-    public TrackScheduleAdapter(AudioPlayer player) {
-        this.player = player;
-        this.tracks = new LinkedList<AudioTrack>();
+  public TrackScheduleAdapter(AudioPlayer player) {
+    this.player = player;
+    this.tracks = new LinkedList<AudioTrack>();
+  }
+
+  @Override
+  public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+    if (tracks.isEmpty()) {
+      return;
     }
 
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (tracks.isEmpty()) {
-            return;
-        }
+    player.playTrack(tracks.remove());
+  }
 
-        player.playTrack(tracks.remove());
+  public void queue(AudioTrack track) {
+    tracks.add(track);
+  }
+
+  public void play() {
+    if (player.getPlayingTrack() != null) {
+      return;
     }
 
-    public void queue(AudioTrack track) {
-        tracks.add(track);
+    this.player.playTrack(tracks.remove());
+  }
+
+  public void skip() {
+    player.stopTrack();
+
+    if (tracks.isEmpty()) {
+      return;
     }
 
-    public void play() {
-        if (player.getPlayingTrack() != null) {
-            return;
-        }
+    player.playTrack(tracks.remove());
+  }
 
-        this.player.playTrack(tracks.remove());
+  public void pause() {
+    if (player.isPaused()) {
+      return;
     }
 
-    public void skip() {
-        player.stopTrack();
+    player.setPaused(true);
+  }
 
-        if (tracks.isEmpty()) {
-            return;
-        }
-
-        player.playTrack(tracks.remove());
+  public void resume() {
+    if (!player.isPaused()) {
+      return;
     }
 
-    public void pause() {
-        if (player.isPaused()) {
-            return;
-        }
-
-        player.setPaused(true);
-    }
-
-    public void resume() {
-        if (!player.isPaused()) {
-            return;
-        }
-
-        player.setPaused(false);
-    }
+    player.setPaused(false);
+  }
 
   public boolean isPlaying() {
-      return !player.isPaused() && !tracks.isEmpty();
+    return (player.getPlayingTrack() != null) && !player.isPaused();
   }
 
   public boolean isPaused() {
-      return player.isPaused();
+    return (player.getPlayingTrack() != null) && player.isPaused();
   }
 }
