@@ -3,11 +3,11 @@ package org.bot.yabot.bot.command;
 import lombok.Getter;
 
 public enum Command {
-  SKIP_SONG("!yam.skip", "!yam.skip", "Skips current track",1),
-  PLAY_SONG("!yam.play", "!yam.play <url>", "Plays track by url from YouTube, SoundCloud and Yandex.Music",2),
+  SKIP_SONG("!yam.skip", "!yam.skip", "Skips current track", 1),
+  PLAY_SONG("!yam.play", "!yam.play <url>", "Plays track by url from YouTube, SoundCloud and Yandex.Music", 2),
   PAUSE_SONG("!yam.pause", "!yam.pause", "Pauses current track", 1),
   RESUME_SONG("!yam.resume", "!yam.resume", "Resumes paused track", 1),
-  HELP("!yam.help", "!yam.help", "Shows command list",1);
+  HELP("!yam.help", "!yam.help", "Shows command list", 1);
 
   @Getter
   private final String command;
