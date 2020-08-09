@@ -8,9 +8,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class ResumeCommandListener extends ListenerAdapter {
+public class HelpCommandListener extends ListenerAdapter {
   private final Command command;
   private final GuildPlayerFasade playerManager;
 
@@ -31,7 +33,7 @@ public class ResumeCommandListener extends ListenerAdapter {
         throw new InvalidCommandParamsException(command);
       }
 
-      handleResumeSong(event);
+      handleHelp(event);
     } catch (InvalidCommandParamsException e) {
       event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
           e.getCommand().getPattern()).queue();
@@ -42,24 +44,18 @@ public class ResumeCommandListener extends ListenerAdapter {
     }
   }
 
-  private void handleResumeSong(GuildMessageReceivedEvent event) {
+  private void handleHelp(final GuildMessageReceivedEvent event) {
     final var guildId = event.getGuild().getId();
-    final var voiceChannel = event.getMember().getVoiceState().getChannel();
-
-    if (voiceChannel == null) {
-      event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
-      return;
-    }
+    String commandsPattern = "Command list: \n";
 
     if (!playerManager.isInitialized(guildId)) {
       playerManager.init(guildId);
-
-      playerManager.resumePlay(guildId);
     }
 
-    if (!playerManager.isPaused(guildId)) {
-      event.getMessage().getTextChannel().sendMessage("Nothing to resume").queue();
-      return;
-    }
+    commandsPattern += Arrays.stream(Command.values()).map(c ->
+        c.getPattern() + " - " + c.getDiscription() + "\n"
+    ).collect(Collectors.joining());
+
+    event.getMessage().getTextChannel().sendMessage(commandsPattern).submit();
   }
 }

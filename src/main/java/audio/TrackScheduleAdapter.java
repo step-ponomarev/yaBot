@@ -63,4 +63,12 @@ public class TrackScheduleAdapter extends AudioEventAdapter {
 
         player.setPaused(false);
     }
+
+  public boolean isPlaying() {
+      return !player.isPaused() && !tracks.isEmpty();
+  }
+
+  public boolean isPaused() {
+      return player.isPaused();
+  }
 }

@@ -11,43 +11,50 @@ import javax.annotation.Nonnull;
 
 @RequiredArgsConstructor
 public class PauseCommandListener extends ListenerAdapter {
-    private final Command command;
-    private final GuildPlayerFasade playerManager;
+  private final Command command;
+  private final GuildPlayerFasade playerManager;
 
-    @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        final var message = event.getMessage().getContentStripped();
+  @Override
+  public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    final var message = event.getMessage().getContentStripped();
 
-        if (!command.isCorrectCommand(message)) {
-            return;
-        }
-
-        try {
-            if (!command.isCorrectArgsAmount(message)) {
-                throw new InvalidCommandParamsException(command);
-            }
-
-            handlePauseSong(event);
-        } catch (InvalidCommandParamsException e) {
-            event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
-                    e.getCommand().getPattern()).queue();
-        } catch (Exception exception) {
-            event.getMessage()
-                    .getTextChannel()
-                    .sendMessage("Command is failed.").queue();
-        }
+    if (event.getMessage().getAuthor().isBot()) {
+      return;
     }
 
-    public void handlePauseSong(GuildMessageReceivedEvent event) {
-        final var guildId = event.getGuild().getId();
-        final var voiceChannel = event.getMember().getVoiceState().getChannel();
-
-        if (voiceChannel == null) {
-            event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
-            return;
-        }
-
-        playerManager.init(guildId);
-        playerManager.pauseTrack(guildId);
+    if (!command.isCorrectCommand(message)) {
+      return;
     }
+
+    try {
+      if (!command.isCorrectArgsAmount(message)) {
+        throw new InvalidCommandParamsException(command);
+      }
+
+      handlePauseSong(event);
+    } catch (InvalidCommandParamsException e) {
+      event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
+          e.getCommand().getPattern()).queue();
+    } catch (Exception exception) {
+      event.getMessage()
+          .getTextChannel()
+          .sendMessage("Command is failed.").queue();
+    }
+  }
+
+  public void handlePauseSong(GuildMessageReceivedEvent event) {
+    final var guildId = event.getGuild().getId();
+    final var voiceChannel = event.getMember().getVoiceState().getChannel();
+
+    if (voiceChannel == null) {
+      event.getMessage().getTextChannel().sendMessage("You must be in voice channel").queue();
+      return;
+    }
+
+    if (!playerManager.isInitialized(guildId)) {
+      playerManager.init(guildId);
+
+      playerManager.pauseTrack(guildId);
+    }
+  }
 }
