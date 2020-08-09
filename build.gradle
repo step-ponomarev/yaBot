@@ -45,6 +45,6 @@ jar {
         attributes 'Main-Class': 'org.bot.yabot.YaBotApplication'
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 }
