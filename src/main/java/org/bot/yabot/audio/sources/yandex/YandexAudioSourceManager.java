@@ -24,6 +24,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 
@@ -91,7 +92,10 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 //            null)
 //    );
 
-    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
+    return new Mp3AudioTrack(trackInfo, new PersistentHttpStream(
+        httpInterfaceManager.getInterface(),
+        new URI(apiService.getTrackUrlById(id.id)),
+        null));
   }
 
   @Override
