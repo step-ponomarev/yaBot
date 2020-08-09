@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 
+import static com.sedmelluq.discord.lavaplayer.tools.Units.DURATION_MS_UNKNOWN;
 
 @RequiredArgsConstructor
 public class YandexAudioSourceManager implements AudioSourceManager {
@@ -78,7 +79,7 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     var trackInfo = new AudioTrackInfo(
         "TEST",
         "TEST",
-        1000,
+        DURATION_MS_UNKNOWN,
         "yandex",
         false,
         apiService.getTrackUrlById(id.id)

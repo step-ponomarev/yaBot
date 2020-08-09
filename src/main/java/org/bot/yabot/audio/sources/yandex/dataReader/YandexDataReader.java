@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+// TODO: Реализовать getAudioTrackInfo
 public interface YandexDataReader {
     JSONObject findTrackData(JSONObject rootData);
 
