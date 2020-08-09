@@ -11,10 +11,10 @@ public class AudioFactory {
   public static AudioPlayerManager createPlayerManager() {
     if (playerManager == null) {
       playerManager = new DefaultAudioPlayerManager();
-      AudioSourceManagers.registerRemoteSources(playerManager);
       playerManager.registerSourceManager(
           YandexAudioSourceManager.createDefaultYandexSourceManager()
       );
+      AudioSourceManagers.registerRemoteSources(playerManager);
     }
 
     return playerManager;

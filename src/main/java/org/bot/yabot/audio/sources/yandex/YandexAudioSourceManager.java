@@ -93,7 +93,6 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 
     //new Player(buffer);
 
-    AudioInputStream in = AudioSystem.getAudioInputStream(new URL(apiService.getTrackUrlById(id.id) +".mp3"));
     return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
   }
 
