@@ -20,15 +20,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import lombok.RequiredArgsConstructor;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.http.HttpClient;
 
 import static com.sedmelluq.discord.lavaplayer.tools.Units.DURATION_MS_UNKNOWN;
@@ -95,8 +91,7 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 //            null)
 //    );
 
-    return (AudioItem) new DefaultAudioPlayerManager().decodeTrack(new MessageInput(new ByteArrayInputStream(buffer.readAllBytes())));
-//    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
+    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
   }
 
   @Override
