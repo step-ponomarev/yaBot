@@ -1,5 +1,7 @@
 package org.bot.yabot.audio.sources.yandex;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import org.bot.yabot.audio.sources.yandex.dataReader.DefaultYandexDataReader;
 import org.bot.yabot.audio.sources.yandex.dataReader.YandexDataReader;
 import org.bot.yabot.audio.sources.yandex.parser.DefaultYandexUrlParser;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -75,6 +78,7 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     }
 
     var buffer = apiService.getTrackInputStreamById(id.id);
+
     var trackInfo = new AudioTrackInfo(
         "TEST",
         "TEST",
@@ -91,9 +95,8 @@ public class YandexAudioSourceManager implements AudioSourceManager {
 //            null)
 //    );
 
-    //new Player(buffer);
-
-    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
+    return (AudioItem) new DefaultAudioPlayerManager().decodeTrack(new MessageInput(new ByteArrayInputStream(buffer.readAllBytes())));
+//    return new Mp3AudioTrack(trackInfo, new NonSeekableInputStream(buffer));
   }
 
   @Override
