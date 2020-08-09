@@ -1,7 +1,7 @@
-import audio.sources.yandex.parser.DefaultYandexUrlParser;
-import audio.sources.yandex.parser.YandexUrlParser;
-import audio.sources.yandex.structures.YandexId;
-import audio.sources.yandex.structures.YandexIdType;
+import org.bot.yabot.audio.sources.yandex.parser.DefaultYandexUrlParser;
+import org.bot.yabot.audio.sources.yandex.parser.YandexUrlParser;
+import org.bot.yabot.audio.sources.yandex.structures.YandexId;
+import org.bot.yabot.audio.sources.yandex.structures.YandexIdType;
 import org.junit.Assert;
 import org.junit.Test;
 
