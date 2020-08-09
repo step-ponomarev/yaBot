@@ -42,7 +42,7 @@ jar {
     baseName = 'yaBot'
     version = '1.0'
     manifest {
-        attributes 'Main-Class': 'YaBotApplication'
+        attributes 'Main-Class': 'org.bot.yabot.YaBotApplication'
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
