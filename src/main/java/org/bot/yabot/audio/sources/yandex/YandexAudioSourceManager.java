@@ -70,10 +70,10 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     }
 
     final JSONObject trackInfo = apiService.getTrackInfoById(id.id);
-
     var audioTrackInfo = dataReader.createTrackInfo(trackInfo);
 
-    return new Mp3AudioTrack(audioTrackInfo,
+    return new Mp3AudioTrack(
+        audioTrackInfo,
         new PersistentHttpStream(
             httpInterfaceManager.getInterface(),
             new URI(apiService.getTrackUrlById(id.id)),

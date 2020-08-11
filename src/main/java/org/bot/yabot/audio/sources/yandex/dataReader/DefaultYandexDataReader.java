@@ -3,7 +3,6 @@ package org.bot.yabot.audio.sources.yandex.dataReader;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class DefaultYandexDataReader implements YandexDataReader {
@@ -11,16 +10,17 @@ public class DefaultYandexDataReader implements YandexDataReader {
   @Override
   public AudioTrackInfo createTrackInfo(JSONObject rootData) {
     var track = rootData.optJSONObject("track");
-    var author = Arrays.asList(rootData.optJSONObject("artists"));
-
+    var author = rootData.getJSONArray("artists").toList();
 
     final String title = track.getString("title");
     final String authorName = author.size() != 1 ?
         author.stream()
-            .map(athor -> athor.getString("name"))
+            .map(athor -> ((JSONObject) athor).getString("name"))
             .collect(Collectors.joining(" & ")) :
-        author.get(0).getString("name");
+        ((JSONObject) author).getString("name");
     final long duration = track.getLong("durationMs");
+
+    System.out.println(authorName);
 
     return new AudioTrackInfo(
         title,
