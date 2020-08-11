@@ -69,15 +69,33 @@ public class YandexAudioSourceManager implements AudioSourceManager {
       return null;
     }
 
-    final JSONObject trackInfo = apiService.getTrackInfoById(id.id);
+    AudioItem item = switch (id.type) {
+      case PLAYLIST -> handlePlaylist(id.id);
+      case TRACK -> handleTrack(id.id);
+      case ALBUM -> handleAlbum(id.id);
+    };
+
+    return item;
+  }
+
+  private AudioItem handleTrack(String id) throws URISyntaxException {
+    final JSONObject trackInfo = apiService.getTrackInfoById(id);
     var audioTrackInfo = dataReader.createTrackInfo(trackInfo);
 
     return new Mp3AudioTrack(
         audioTrackInfo,
         new PersistentHttpStream(
             httpInterfaceManager.getInterface(),
-            new URI(apiService.getTrackUrlById(id.id)),
+            new URI(apiService.getTrackUrlById(id)),
             null));
+  }
+
+  private AudioItem handlePlaylist(String id) {
+    return null;
+  }
+
+  private AudioItem handleAlbum(String id) {
+    return null;
   }
 
   @Override
