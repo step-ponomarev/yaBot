@@ -1,7 +1,5 @@
 package org.bot.yabot.audio.sources.yandex;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import org.bot.yabot.audio.sources.yandex.dataReader.DefaultYandexDataReader;
 import org.bot.yabot.audio.sources.yandex.dataReader.YandexDataReader;
 import org.bot.yabot.audio.sources.yandex.parser.DefaultYandexUrlParser;
@@ -19,16 +17,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-
-import static com.sedmelluq.discord.lavaplayer.tools.Units.DURATION_MS_UNKNOWN;
 
 @RequiredArgsConstructor
 public class YandexAudioSourceManager implements AudioSourceManager {
@@ -67,35 +62,22 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     }
   }
 
-  private AudioItem handleReference(AudioReference reference) throws IOException, URISyntaxException, UnsupportedAudioFileException {
+  private AudioItem handleReference(AudioReference reference) throws URISyntaxException {
     final YandexId id = urlParser.defineUrlType(reference.identifier);
 
     if (id == null) {
       return null;
     }
 
-    var buffer = apiService.getTrackInputStreamById(id.id);
+    final JSONObject trackInfo = apiService.getTrackInfoById(id.id);
 
-    var trackInfo = new AudioTrackInfo(
-        "TEST",
-        "TEST",
-        DURATION_MS_UNKNOWN,
-        "yandex",
-        false,
-        apiService.getTrackUrlById(id.id)
-    );
+    var audioTrackInfo = dataReader.createTrackInfo(trackInfo);
 
-//    return new Mp3AudioTrack(trackInfo,
-//        new PersistentHttpStream(
-//            httpInterfaceManager.getInterface(),
-//            apiService.getTrackUriById(id.id),
-//            null)
-//    );
-
-    return new Mp3AudioTrack(trackInfo, new PersistentHttpStream(
-        httpInterfaceManager.getInterface(),
-        new URI(apiService.getTrackUrlById(id.id)),
-        null));
+    return new Mp3AudioTrack(audioTrackInfo,
+        new PersistentHttpStream(
+            httpInterfaceManager.getInterface(),
+            new URI(apiService.getTrackUrlById(id.id)),
+            null));
   }
 
   @Override
@@ -104,17 +86,15 @@ public class YandexAudioSourceManager implements AudioSourceManager {
   }
 
   @Override
-  public void encodeTrack(AudioTrack track, DataOutput output) throws IOException {
-
+  public void encodeTrack(AudioTrack track, DataOutput output) {
   }
 
   @Override
-  public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException {
+  public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) {
     return null;
   }
 
   @Override
   public void shutdown() {
-
   }
 }

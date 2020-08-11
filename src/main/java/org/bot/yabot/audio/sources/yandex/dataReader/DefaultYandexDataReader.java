@@ -1,67 +1,34 @@
 package org.bot.yabot.audio.sources.yandex.dataReader;
 
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudTrackFormat;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class DefaultYandexDataReader implements YandexDataReader {
-  @Override
-  public JSONObject findTrackData(JSONObject rootData) {
-    final Map<String, String> trackInfoMap = new HashMap();
 
+  @Override
+  public AudioTrackInfo createTrackInfo(JSONObject rootData) {
     var track = rootData.optJSONObject("track");
-    trackInfoMap.put("id", track.getString("id"));
-    trackInfoMap.put("title", track.getString("title"));
-    trackInfoMap.put("storageDir", track.getString("storageDir"));
+    var author = Arrays.asList(rootData.optJSONObject("artists"));
 
-    return createJSONObj(trackInfoMap);
-  }
 
-  @Override
-  public String readTrackId(JSONObject trackData) {
-    return null;
-  }
+    final String title = track.getString("title");
+    final String authorName = author.size() != 1 ?
+        author.stream()
+            .map(athor -> athor.getString("name"))
+            .collect(Collectors.joining(" & ")) :
+        author.get(0).getString("name");
+    final long duration = track.getLong("durationMs");
 
-  @Override
-  public boolean isTrackBlocked(JSONObject trackData) {
-    return false;
-  }
-
-  @Override
-  public AudioTrackInfo readTrackInfo(JSONObject trackData, String identifier) {
-    return null;
-  }
-
-  @Override
-  public List<SoundCloudTrackFormat> readTrackFormats(JSONObject trackData) {
-    return null;
-  }
-
-  @Override
-  public JSONObject findPlaylistData(JSONObject rootData) {
-    return null;
-  }
-
-  @Override
-  public String readPlaylistName(JSONObject playlistData) {
-    return null;
-  }
-
-  @Override
-  public String readPlaylistIdentifier(JSONObject playlistData) {
-    return null;
-  }
-
-  @Override
-  public List<JSONObject> readPlaylistTracks(JSONObject playlistData) {
-    return null;
-  }
-
-  private JSONObject createJSONObj(Map<String, String> mapInfo) {
-    return new JSONObject(mapInfo);
+    return new AudioTrackInfo(
+        title,
+        authorName,
+        duration,
+        "yandex",
+        false,
+        null
+    );
   }
 }
