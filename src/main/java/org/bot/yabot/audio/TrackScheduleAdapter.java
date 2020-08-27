@@ -14,7 +14,7 @@ public class TrackScheduleAdapter extends AudioEventAdapter {
 
   public TrackScheduleAdapter(AudioPlayer player) {
     this.player = player;
-    this.tracks = new LinkedList<AudioTrack>();
+    this.tracks = new LinkedList<>();
   }
 
   @Override

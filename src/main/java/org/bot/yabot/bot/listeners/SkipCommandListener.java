@@ -33,8 +33,11 @@ public class SkipCommandListener extends ListenerAdapter {
 
       handleSkipSong(event);
     } catch (InvalidCommandParamsException e) {
-      event.getMessage().getTextChannel().sendMessage("Invalid arguments, try: " +
-          e.getCommand().getPattern()).queue();
+      event
+          .getMessage()
+          .getTextChannel()
+          .sendMessage("Invalid arguments, try: " +
+              e.getCommand().getPattern()).queue();
     } catch (Exception exception) {
       event.getMessage()
           .getTextChannel()

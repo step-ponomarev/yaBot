@@ -14,8 +14,11 @@ public final class GreetingListener extends ListenerAdapter {
 
   @Override
   public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-    event.getGuild().getTextChannels().get(0).sendMessage(
-        "Hello, my name is YaBot. I can play music from YouTube, SoundCloud, Yandex.Music and e.t.c."
-    ).submit();
+    event.getGuild()
+        .getTextChannels()
+        .get(0)
+        .sendMessage(
+            "Hello, my name is YaBot. I can play music from YouTube, SoundCloud, Yandex.Music and e.t.c."
+        ).submit();
   }
 }
