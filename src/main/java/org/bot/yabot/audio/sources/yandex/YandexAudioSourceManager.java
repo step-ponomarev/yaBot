@@ -1,5 +1,6 @@
 package org.bot.yabot.audio.sources.yandex;
 
+import com.sedmelluq.discord.lavaplayer.track.*;
 import org.bot.yabot.audio.sources.yandex.dataReader.DefaultYandexDataReader;
 import org.bot.yabot.audio.sources.yandex.dataReader.YandexDataReader;
 import org.bot.yabot.audio.sources.yandex.parser.DefaultYandexUrlParser;
@@ -11,10 +12,6 @@ import com.sedmelluq.discord.lavaplayer.container.mp3.Mp3AudioTrack;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.*;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
-import com.sedmelluq.discord.lavaplayer.track.AudioReference;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -24,6 +21,7 @@ import java.io.DataOutput;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
+import java.util.ArrayList;
 
 @RequiredArgsConstructor
 public class YandexAudioSourceManager implements AudioSourceManager {
@@ -78,7 +76,7 @@ public class YandexAudioSourceManager implements AudioSourceManager {
     return item;
   }
 
-  private AudioItem handleTrack(String id) throws URISyntaxException {
+  private AudioTrack handleTrack(String id) throws URISyntaxException {
     final JSONObject trackInfo = apiService.getTrackInfoById(id);
     var audioTrackInfo = dataReader.createTrackInfo(trackInfo);
 
@@ -87,15 +85,24 @@ public class YandexAudioSourceManager implements AudioSourceManager {
         new PersistentHttpStream(
             httpInterfaceManager.getInterface(),
             new URI(apiService.getTrackUrlById(id)),
-            null));
+            null)
+    );
   }
 
-  private AudioItem handlePlaylist(String id) {
+  private BasicAudioPlaylist handlePlaylist(String id) {
     return null;
   }
 
-  private AudioItem handleAlbum(String id) {
-    return null;
+  private BasicAudioPlaylist handleAlbum(String id) throws URISyntaxException {
+    var albumInfo = apiService.getAlbumInfoById(id);
+    var trackIdList = dataReader.getAlbumTrackIdList(albumInfo);
+
+    var audioTrackList = new ArrayList<AudioTrack>();
+    for (String trackId : trackIdList) {
+      audioTrackList.add(handleTrack(trackId));
+    }
+
+    return new BasicAudioPlaylist("Album " + id, audioTrackList, audioTrackList.get(0), false);
   }
 
   @Override

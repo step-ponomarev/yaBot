@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DefaultYandexApiService implements YandexApiService {
   private final HttpClient httpClient;
 
+  private final String GET_ALBUM_INFO_API_TEMPLATE = "https://music.yandex.ru/handlers/album.jsx?album=${albumID}";
   private final String GET_TRACK_INFO_API_TEMPLATE = "https://music.yandex.ru/handlers/track.jsx?track=${trackID}";
   private final String GET_STORAGE_INFO_API_TEMPLATE = "https://storage.mds.yandex.net/download-info/${storageDir}/2?format=json";
   private final String TRACK_LINK_TEMPLATE = "https://${host}/get-mp3/${hashedUrl}/${ts}${path}";
@@ -77,6 +78,13 @@ public class DefaultYandexApiService implements YandexApiService {
     return downloadLink;
   }
 
+  @Override
+  public JSONObject getAlbumInfoById(String id) {
+    final HttpRequest request = createGetAlbumInfoInfoRequest(id);
+
+    return GET(request);
+  }
+
   private String getStorageDir(JSONObject trackInfo) {
     return trackInfo.optJSONObject("track").getString("storageDir");
   }
@@ -114,5 +122,17 @@ public class DefaultYandexApiService implements YandexApiService {
         .join();
 
     return json.get();
+  }
+
+  private HttpRequest createGetAlbumInfoInfoRequest(String id) {
+    final String url = createGetAlbumInfoUrl(id);
+
+    return HttpRequest.newBuilder(URI.create(url)).build();
+  }
+
+  private String createGetAlbumInfoUrl(String id) {
+    final String url = StringSubstitutor.replace(GET_ALBUM_INFO_API_TEMPLATE, Map.of("albumID", id), "${", "}");
+
+    return url;
   }
 }

@@ -1,6 +1,7 @@
 package org.bot.yabot.audio.sources.yandex.dataReader;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -8,6 +9,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DefaultYandexDataReader implements YandexDataReader {
+  @Override
+  public List<String> getAlbumTrackIdList(JSONObject albumInfo) {
+    JSONArray tracks = albumInfo.getJSONArray("volumes");
+
+    final List<String> idList = new ArrayList<>();
+    for (int i = 0; i < tracks.length(); ++i) {
+      idList.add(((JSONObject) tracks.opt(i)).getString("id"));
+    }
+
+    return idList;
+  }
 
   @Override
   public AudioTrackInfo createTrackInfo(JSONObject rootData) {
