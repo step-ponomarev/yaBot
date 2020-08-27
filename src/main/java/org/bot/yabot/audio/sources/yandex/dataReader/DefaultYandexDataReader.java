@@ -18,6 +18,8 @@ public class DefaultYandexDataReader implements YandexDataReader {
       idList.add(((JSONObject) tracks.opt(i)).getString("id"));
     }
 
+    System.out.println(idList);
+
     return idList;
   }
 

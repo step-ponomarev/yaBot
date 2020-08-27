@@ -67,6 +67,8 @@ public class YandexAudioSourceManager implements AudioSourceManager {
       return null;
     }
 
+    System.err.println(id.type);
+
     AudioItem item = switch (id.type) {
       case PLAYLIST -> handlePlaylist(id.id);
       case TRACK -> handleTrack(id.id);
